@@ -1,0 +1,15 @@
+{
+  "background_color": "black",
+  "description": "Manuale degli incantesimi per D&D 5e",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "d20.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "name": "Manuale incantesimi 5e",
+  "short_name": "D&D 5e",
+  "start_url": "/"
+}

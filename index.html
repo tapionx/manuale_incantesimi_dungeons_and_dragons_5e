@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Manuale degli Incantesimi D&D 5e</title>
+  <link rel="stylesheet" href="bulma.min.css">
+  <script defer src="font-awesome.all.js"></script>
+  <style>
+    .has-navbar-fixed-top {
+      padding-top: 3.25rem;
+    }
+    .spell:hover {
+      /* background-color: #f7f7f7; */
+      box-shadow: 0em 0em 1em 0.4em rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02);
+    }
+    .spell:active {
+      box-shadow: none;
+      border: 1px solid #ececec;
+    }
+    .spell {
+      cursor: pointer;
+    }
+    .delete {
+      position: absolute;
+      right: 1rem;
+    }
+    @media screen and (max-width: 1024px) {
+      .navbar-menu {
+        display: block;
+        padding-top: 0px;
+        box-shadow: none;
+      }
+      .navbar-brand .subtitle {
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+      .navbar-brand {
+        min-height: 0px;
+      }
+      .navbar-brand .navbar-item{
+        min-height: 0px;
+        padding: 0.5rem 1rem 0rem 1rem;
+      }
+      .has-navbar-fixed-top {
+        padding-top: 5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section id="app" class="section">
+    <div class="container has-navbar-fixed-top" v-show="selected_spell === false">
+
+      <nav class="navbar is-fixed-top">
+        <div class="container">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              <h2 class="subtitle is-3">Manuale degli incantesimi - D&D 5e</h2>
+            </div>
+          </div>
+          <div class="navbar-menu">
+            <div class="navbar-start">
+            </div>
+            <div class="navbar-end">
+              <div class="navbar-item">
+                <div class="control has-icons-left">
+                  <input id="ded-search" v-bind:value="search" v-on:input="search= $event.target.value" class="input" type="search" placeholder="cerca..." :autofocus="'autofocus'">
+                  <span class="icon is-medium is-left">
+                    <i class="fas fa-search"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="level" v-if="spells === false" style="margin-top: 30%; color: #e6eaac;">
+        <div class="level-item">
+          <i class="fa-5x fas fa-sun fa-spin"></i>
+        </div>
+      </div>
+      
+      <template v-show="spells !== false">
+        <template v-for="spell in spells">
+          <div v-if="spell.name.toUpperCase().includes(search.toUpperCase())" class="box spell" v-on:click="selectSpell(spell)">
+            <div class="title is-4">{{ spell.name }}</div>
+            <div class="field is-grouped is-grouped-multiline is-mobile">
+              <div class="control">
+                <span class="tag is-success is-light">{{ spell.school }}</span>
+              </div>
+              <div v-for="level in spell.level" class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-info is-light">{{ level.slice(0, -1) }}</span>
+                  <span class="tag is-info">{{ level.slice(-1) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="tags">
+              <span v-if="spell.ritual" class="tag is-danger is-light">rituale</span>
+              <span v-if="spell.reaction" class="tag is-danger is-light">reazione</span>
+              <span v-if="spell.concentration" class="tag is-danger is-light">concentrazione</span>
+              <span v-if="spell.bonus_action" class="tag is-danger is-light">azione bonus</span>
+            </div>
+            <div class="short-description" v-html="spell.short_description"></div>
+          </div>
+        </template>
+      </template>      
+    </div>
+    
+    <div v-show="selected_spell !== false">
+      <a class="delete is-medium" v-on:click="returnToList"></a>
+      <h2 class="title">{{ selected_spell.name }}</h2>
+      <div class="field is-grouped is-grouped-multiline is-mobile">
+        <div v-for="level in selected_spell.level" class="control">
+          <div class="tags has-addons">
+            <span class="tag is-info is-light">{{ level.slice(0, -1) }}</span>
+            <span class="tag is-info">{{ level.slice(-1) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="" v-html="selected_spell.full_text"></div>
+    </div>
+  </section>
+
+  <script src="vue.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        spells: false,
+        search: "",
+        selected_spell: false,
+        scroll_y: 0,
+      },
+      mounted: function(){
+        window.onpopstate = this.onPopState;
+        fetch('spells_fixed.json')
+        .then(r => r.json())
+        .then(json => {
+          this.spells = json
+          window.spells = json;
+        });
+      },
+      methods: {
+        selectSpell: function(spell) {
+          history.pushState({}, spell.name, "/")
+          this.scroll_y = window.pageYOffset || document.documentElement.scrollTop;
+          this.selected_spell = spell;
+          this.$nextTick(() => {
+            window.scrollTo(0,0);
+          });
+        },
+        returnToList: function() {
+          this.selected_spell = false;
+          // restore previous scroll position
+          this.$nextTick(() => {
+            window.scrollTo(0, this.scroll_y);
+          });
+          history.replaceState({}, "", "/");
+        },
+        onPopState: function() {
+          if(this.selected_spell !== false){
+            this.returnToList();
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
