@@ -74,10 +74,15 @@
             </div>
             <div class="navbar-end">
               <div class="navbar-item">
-                <div class="control has-icons-left">
-                  <input id="ded-search" v-bind:value="search" v-on:input="search= $event.target.value" class="input" type="search" placeholder="cerca..." :autofocus="'autofocus'" autocomplete="off">
+                <div class="control has-icons-left has-icons-right">
+                  <input id="ded-search" v-bind:value="search" v-on:input="search= $event.target.value" class="input" type="text" placeholder="cerca..." :autofocus="'autofocus'" autocomplete="off">
                   <span class="icon is-medium is-left">
                     <i class="fas fa-search"></i>
+                  </span>
+                  <span class="icon is-medium is-right">
+                    <a v-if="search != ''" v-on:click="search = ''" style="pointer-events: auto;">
+                      <i class="fas fa-backspace" style="color: tomato;"></i>
+                    </a>
                   </span>
                 </div>
               </div>
@@ -136,6 +141,7 @@
   </section>
 
   <script src="vue.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
   <script>
     new Vue({
       el: '#app',
