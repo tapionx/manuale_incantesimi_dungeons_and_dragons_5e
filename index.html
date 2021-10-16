@@ -75,7 +75,7 @@
             <div class="navbar-end">
               <div class="navbar-item">
                 <div class="control has-icons-left has-icons-right">
-                  <input id="ded-search" v-bind:value="search" v-on:input="search= $event.target.value" class="input" type="text" placeholder="cerca..." :autofocus="'autofocus'" autocomplete="off">
+                  <input id="ded-search" v-model.lazy="search" class="input" type="text" placeholder="cerca..." :autofocus="'autofocus'" autocomplete="off">
                   <span class="icon is-medium is-left">
                     <i class="fas fa-search"></i>
                   </span>
